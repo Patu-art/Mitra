@@ -336,6 +336,24 @@
     closeSettings();
     showToast("Disconnected. Your key has been cleared from this tab.");
   });
+  $("sendBtn").addEventListener("click", () => {
+    const field = $("messageInput");
+    const value = field.value;
+    field.value = "";
+    field.style.height = "auto";
+    sendMessage(value);
+  });
+  $("messageInput").addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      $("sendBtn").click();
+    }
+  });
+  $("messageInput").addEventListener("input", (event) => {
+    const field = event.currentTarget;
+    field.style.height = "auto";
+    field.style.height = Math.min(field.scrollHeight, 180) + "px";
+  });
   voiceBtn.addEventListener("click", () => {
     if (listening) stopListening();
     else startListening();
