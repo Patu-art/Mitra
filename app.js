@@ -22,26 +22,27 @@
     const textarea = $("messageInput");
     const send = $("sendBtn");
     const hint = document.querySelector(".composer-hint");
-    if (textarea) textarea.hidden = true;
-    if (send) send.hidden = true;
-    if (hint) hint.hidden = true;
-    if (composer) {
-      composer.classList.add("voice-composer");
-      const copy = document.createElement("div");
-      copy.className = "voice-copy";
-      const title = document.createElement("strong");
-      title.textContent = "Talk to Mitra";
-      copy.append(title, voiceStatus);
-      composer.replaceChildren(voiceBtn, copy);
-    }
+    const bottom = composer && composer.querySelector(".composer-bottom");
+    if (!composer || !bottom) return;
+
+    composer.classList.add("assistant-composer");
+    if (textarea) textarea.hidden = false;
+    if (send) send.hidden = false;
+    if (hint) hint.hidden = false;
+
+    const voiceDock = document.createElement("div");
+    voiceDock.className = "voice-dock";
+    voiceDock.append(voiceBtn, voiceStatus);
+    bottom.insertBefore(voiceDock, bottom.firstChild);
+
     const disclaimer = document.querySelector(".disclaimer");
-    if (disclaimer) disclaimer.textContent = "Mitra is an early prototype. Voice recognition depends on browser support and may use an online speech service. Avoid speaking sensitive information.";
+    if (disclaimer) disclaimer.textContent = "Text replies work when an AI connection is available. Voice input depends on browser support; spoken replies use your device’s available speech voice.";
     const welcomeCopy = document.querySelector(".welcome-copy");
-    if (welcomeCopy) welcomeCopy.textContent = "Tap the microphone, speak naturally, and Mitra will answer out loud.";
+    if (welcomeCopy) welcomeCopy.textContent = "A voice-first personal system for quick questions, thinking out loud, and getting things done. Type for now; use the mic when you’re ready.";
     const modelSelect = $("modelSelect");
     if (modelSelect) {
       modelSelect.replaceChildren();
-      [["gemini-3.8-flash","Gemini 3.8 Flash (recommended)"],["gemini-3.5-flash-lite","Gemini 3.5 Flash-Lite"],["gemini-2.5-flash","Gemini 2.5 Flash (legacy access may be limited)"]].forEach(([value,label]) => {
+      [["gemini-3.8-flash","Gemini 3.8 Flash"],["gemini-3.5-flash-lite","Gemini 3.5 Flash-Lite"],["gemini-2.5-flash","Gemini 2.5 Flash (legacy access may be limited)"]].forEach(([value,label]) => {
         const option = document.createElement("option");
         option.value = value;
         option.textContent = label;
