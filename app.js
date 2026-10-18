@@ -141,6 +141,7 @@
     if (/reported as leaked|API key was reported as leaked/i.test(message)) {
       return "Google has blocked this key because it was reported as exposed. Create a replacement key in Google AI Studio and keep it private.";
     }
+    if (/HTTP 503|high demand|UNAVAILABLE|HTTP 502|HTTP 504/i.test(message)) return "Google’s AI service is temporarily overloaded. I tried again automatically, but it is still busy. Wait a little and try again.";
     if (/quota|RESOURCE_EXHAUSTED|rate limit/i.test(message)) {
       return "Google says the API usage limit has been reached. Check your Gemini API quota or try again later.";
     }
@@ -221,7 +222,19 @@
 
     try {
       const context = history.slice(-20).map(({ role, text: content }) => ({ role, text: content }));
-      const answer = await askGemini(context);
+      let answer;
+      // Retry temporary server overloads with exponential backoff.
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          answer = await askGemini(context);
+          break;
+        } catch (error) {
+          const temporary = /HTTP (503|502|504|429)|UNAVAILABLE|high demand|RESOURCE_EXHAUSTED/i.test(String(error && error.message));
+          if (!temporary || attempt === 2) throw error;
+          voiceStatus.textContent = "Google is busy. Retrying… (" + (attempt + 1) + "/2)";
+          await new Promise((resolve) => window.setTimeout(resolve, 1000 * Math.pow(2, attempt)));
+        }
+      }
       typingRow.remove();
       history.push({ role: "assistant", text: answer, time: Date.now() });
       history = history.slice(-80);
