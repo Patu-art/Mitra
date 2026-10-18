@@ -117,8 +117,8 @@
   function closeSettings() { modal.hidden = true; }
 
   function updateConnection() {
-    $("connectionLabel").textContent = apiKey ? "Gemini ready · " + model : "AI not connected";
-    $("topSettingsBtn").innerHTML = apiKey ? "AI settings <span>↗</span>" : "Connect AI <span>↗</span>";
+    $("connectionLabel").textContent = apiKey ? "AI LINK ESTABLISHED" : "SYSTEM STANDBY · AI LINK OFFLINE";
+    $("topSettingsBtn").innerHTML = '<span class="settings-icon">⚙</span> ' + (apiKey ? "CONFIGURE" : "CONNECT AI");
   }
 
   function setBusy(value) {
@@ -128,9 +128,13 @@
     if (value) {
       voiceStatus.textContent = "Mitra is thinking…";
       voiceBtn.setAttribute("aria-label", "Mitra is thinking");
+      if (welcomeEl) { welcomeEl.classList.remove("listening"); welcomeEl.classList.add("thinking"); }
+      const stateText = $("voiceStateText"); if (stateText) stateText.textContent = "PROCESSING REQUEST";
     } else if (!listening) {
       voiceStatus.textContent = "Tap the microphone and speak";
       voiceBtn.setAttribute("aria-label", "Speak to Mitra");
+      if (welcomeEl) welcomeEl.classList.remove("thinking", "listening");
+      const stateText = $("voiceStateText"); if (stateText) stateText.textContent = "STANDING BY";
     }
   }
 
@@ -278,6 +282,8 @@
     listening = false;
     voiceBtn.classList.remove("listening");
     voiceBtn.textContent = "🎙";
+    if (welcomeEl) welcomeEl.classList.remove("listening");
+    const stateText = $("voiceStateText"); if (stateText) stateText.textContent = "STANDING BY";
     if (recognition) {
       try { recognition.stop(); } catch {}
     }
@@ -307,6 +313,8 @@
       voiceBtn.classList.add("listening");
       voiceBtn.textContent = "■";
       voiceStatus.textContent = "Listening… tap stop when finished";
+      if (welcomeEl) { welcomeEl.classList.remove("thinking"); welcomeEl.classList.add("listening"); }
+      const stateText = $("voiceStateText"); if (stateText) stateText.textContent = "LISTENING · SPEAK NOW";
     };
     recognition.onresult = (event) => {
       let interim = "";
@@ -329,6 +337,8 @@
       listening = false;
       voiceBtn.classList.remove("listening");
       voiceBtn.textContent = "🎙";
+      if (welcomeEl) welcomeEl.classList.remove("listening");
+      const stateText = $("voiceStateText"); if (stateText) stateText.textContent = transcript ? "VOICE RECEIVED" : "STANDING BY";
       if (transcript) sendMessage(transcript);
       else if (!busy) voiceStatus.textContent = "Tap the microphone and speak";
     };
@@ -392,7 +402,6 @@
   });
   $("memoryNav").addEventListener("click", () => showToast("Long-term notes are not implemented yet. Conversation history stays in this browser."));
   $("chatNav").addEventListener("click", () => $("sidebar").classList.remove("open"));
-  $("menuBtn").addEventListener("click", () => $("sidebar").classList.toggle("open"));
   document.addEventListener("keydown", (event) => { if (event.key === "Escape") { closeSettings(); stopListening(); } });
 
   document.querySelectorAll(".suggestion[data-prompt]").forEach((button) => {
