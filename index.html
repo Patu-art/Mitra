@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f2f0e9">
+  <meta name="theme-color" content="#080d12">
   <meta name="description" content="Mitra — a voice-first personal system.">
   <title>MITRA // Personal System</title>
-  <link rel="stylesheet" href="style.css?v=20261018-4">
+  <link rel="stylesheet" href="style.css?v=20261018-5">
 </head>
 <body>
   <div class="app-shell">
@@ -30,17 +30,24 @@
       </header>
 
       <section class="conversation" id="conversation" aria-live="polite">
-        <div class="welcome" id="welcome">
-          <div class="welcome-orb"><span>M</span><i></i></div>
-          <div class="eyebrow">MITRA // PERSONAL SYSTEM</div>
-          <h1>Your world.<br class="desktop-break"> On your <em>command.</em></h1>
-          <p class="welcome-copy">A personal system for quick questions, ideas, and everyday tasks. Text works now. Voice interaction is being built.</p>
-          <div class="suggestions">
-            <button class="suggestion" data-prompt="Explain a difficult topic to me in simple steps."><span>↗</span><strong>Learn something</strong><small>Break a topic into simple steps</small></button>
-            <button class="suggestion" data-prompt="Help me make a realistic plan for today."><span>◷</span><strong>Plan my day</strong><small>Turn priorities into clear actions</small></button>
-            <button class="suggestion" data-prompt="Help me brainstorm a useful project idea."><span>✳</span><strong>Explore an idea</strong><small>Think, build and improve</small></button>
+        <div class="welcome system-home" id="welcome">
+          <div class="system-readout"><span><i class="status-dot"></i> MITRA CORE</span><span class="system-build">PERSONAL SYSTEM / 001</span></div>
+          <div class="core-stage" aria-label="Mitra system core">
+            <div class="core-ring ring-outer"></div><div class="core-ring ring-mid"></div><div class="core-ring ring-inner"></div>
+            <div class="core-orb"><span>M</span><i></i></div>
+            <div class="orbit-label orbit-label-a">VOICE INTERFACE</div><div class="orbit-label orbit-label-b">READY WHEN YOU ARE</div>
+            <div class="core-crosshair crosshair-a"></div><div class="core-crosshair crosshair-b"></div>
           </div>
-          <div class="welcome-foot"><span class="tiny-shield">◇</span> SYSTEM BUILD 001 · LOCAL INTERFACE / ONLINE INTELLIGENCE</div>
+          <div class="eyebrow">PERSONAL ASSISTANT / STANDBY</div>
+          <h1>I'm here<span class="terminal-dot">.</span></h1>
+          <p class="welcome-copy">Your space to think out loud, ask, plan, and get things done.</p>
+          <div class="system-prompt"><span class="prompt-line"></span><span>Start with a message. Voice interaction is in development.</span></div>
+          <div class="suggestions" aria-hidden="true">
+            <button class="suggestion" data-prompt="Explain a difficult topic to me in simple steps.">Learn something</button>
+            <button class="suggestion" data-prompt="Help me make a realistic plan for today.">Plan my day</button>
+            <button class="suggestion" data-prompt="Help me brainstorm a useful project idea.">Explore an idea</button>
+          </div>
+          <div class="welcome-foot"><span class="tiny-shield">◇</span> LOCAL INTERFACE <span class="foot-separator">/</span> AI CONNECTION OPTIONAL</div>
         </div>
         <div class="messages" id="messages"></div>
       </section>
@@ -81,6 +88,6 @@
   </div>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="app.js?v=20261018-4"></script>
+  <script src="app.js?v=20261018-5"></script>
 </body>
 </html>
