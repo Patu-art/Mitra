@@ -395,6 +395,17 @@
   $("menuBtn").addEventListener("click", () => $("sidebar").classList.toggle("open"));
   document.addEventListener("keydown", (event) => { if (event.key === "Escape") { closeSettings(); stopListening(); } });
 
+  document.querySelectorAll(".suggestion[data-prompt]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const field = $("messageInput");
+      field.value = button.dataset.prompt || "";
+      field.style.height = "auto";
+      field.style.height = Math.min(field.scrollHeight, 180) + "px";
+      field.focus();
+      if (window.matchMedia("(max-width: 640px)").matches) field.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  });
+
   setupVoiceUi();
   renderHistory();
   updateConnection();
