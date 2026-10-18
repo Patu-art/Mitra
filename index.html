@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#111827">
   <meta name="description" content="Mitra — a personal AI assistant prototype for web, phone and PC.">
   <title>Mitra — Personal AI</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=20261018-2">
 </head>
 <body>
   <div class="app-shell">
@@ -70,8 +70,9 @@
       <div class="field-note">Get a key from <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer">Google AI Studio ↗</a>. Free access and limits depend on Google's current terms and your account.</div>
       <label for="modelSelect">Model</label>
       <select id="modelSelect">
-        <option value="gemini-2.5-flash">Gemini 2.5 Flash (default)</option>
-        <option value="gemini-2.0-flash">Gemini 2.0 Flash (if available to your key)</option>
+        <option value="gemini-3.8-flash">Gemini 3.8 Flash (recommended)</option>
+        <option value="gemini-3.5-flash-lite">Gemini 3.5 Flash-Lite</option>
+        <option value="gemini-2.5-flash">Gemini 2.5 Flash (legacy access may be limited)</option>
       </select>
       <div class="security-callout"><span>◇</span><p><strong>Important:</strong> this is a browser-only prototype, not a secure backend. Never use it on a shared or untrusted device. The key is not saved when you close or refresh the tab, but it is used in requests to Google.</p></div>
       <div class="modal-actions"><button class="secondary-btn" id="disconnectBtn" type="button">Disconnect</button><button class="primary-btn" id="saveSettingsBtn" type="button">Use this key <span>→</span></button></div>
@@ -80,6 +81,6 @@
   </div>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="app.js"></script>
+  <script src="app.js?v=20261018-2"></script>
 </body>
 </html>
