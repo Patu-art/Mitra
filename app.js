@@ -200,13 +200,36 @@
     window.speechSynthesis.speak(utterance);
   }
 
+  function localReply(text) {
+    const value = text.toLowerCase().replace(/[^a-z0-9\s']/g, " ").replace(/\s+/g, " ").trim();
+    if (/^(hi|hello|hey|hii|heyy|yo|sup)( mitra)?$/.test(value)) return "Hey. I'm here. You can type a message below, or try the microphone when you're ready.";
+    if (/^(how are you|how are you doing|whats up|what's up)( mitra)?$/.test(value)) return "I'm running and ready to help. My full AI brain isn't connected yet, but basic local replies work.";
+    if (/^(what is your name|whats your name|who are you|introduce yourself)$/.test(value)) return "I'm Mitra — your personal assistant project. Right now I can handle a few simple offline messages; broader conversations need an AI connection.";
+    if (/^(thanks|thank you|thx|ty)$/.test(value)) return "You're welcome.";
+    if (/^(good morning|good afternoon|good evening|good night)$/.test(value)) return "Hey. Hope your day is going alright. What are we working on?";
+    if (/^(help|what can you do|commands)$/.test(value)) return "For now, I can respond to a few basic messages offline. Connect an AI provider in Settings for general questions. The mic uses your browser's speech recognition, and replies are spoken using a voice available on your device.";
+    if (/^(are you online|are you connected|do you work offline)$/.test(value)) return apiKey ? "An AI provider is connected for this tab." : "The interface and a few basic replies work offline. General AI answers need an online model connection.";
+    return null;
+  }
+
   async function sendMessage(text) {
     if (busy) return;
     text = String(text || "").trim();
     if (!text) return;
-    if (!apiKey) {
+    const offlineAnswer = !apiKey ? localReply(text) : null;
+    if (!apiKey && !offlineAnswer) {
+      addMessage("user", text);
       openSettings();
-      $("settingsStatus").textContent = "Add your Gemini API key before speaking to Mitra.";
+      $("settingsStatus").textContent = "This needs an AI provider. Basic greetings and help work offline.";
+      return;
+    }
+    if (offlineAnswer) {
+      history.push({ role: "user", text, time: Date.now() }, { role: "assistant", text: offlineAnswer, time: Date.now() });
+      history = history.slice(-80);
+      persistHistory();
+      addMessage("user", text);
+      addMessage("assistant", offlineAnswer);
+      speak(offlineAnswer);
       return;
     }
 
