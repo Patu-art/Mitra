@@ -6,8 +6,50 @@
   const messagesEl = $("messages");
   const welcomeEl = $("welcome");
   const modal = $("settingsModal");
-  const voiceBtn = $("voiceBtn");
-  const voiceStatus = $("voiceStatus");
+  const voiceBtn = document.createElement("button");
+  voiceBtn.id = "voiceBtn";
+  voiceBtn.type = "button";
+  voiceBtn.className = "voice-btn";
+  voiceBtn.setAttribute("aria-label", "Speak to Mitra");
+  voiceBtn.textContent = "🎙";
+  const voiceStatus = document.createElement("span");
+  voiceStatus.id = "voiceStatus";
+  voiceStatus.setAttribute("aria-live", "polite");
+  voiceStatus.textContent = "Tap the microphone and speak";
+
+  function setupVoiceUi() {
+    const composer = $("composer");
+    const textarea = $("messageInput");
+    const send = $("sendBtn");
+    const hint = document.querySelector(".composer-hint");
+    if (textarea) textarea.hidden = true;
+    if (send) send.hidden = true;
+    if (hint) hint.hidden = true;
+    if (composer) {
+      composer.classList.add("voice-composer");
+      const copy = document.createElement("div");
+      copy.className = "voice-copy";
+      const title = document.createElement("strong");
+      title.textContent = "Talk to Mitra";
+      copy.append(title, voiceStatus);
+      composer.replaceChildren(voiceBtn, copy);
+    }
+    const disclaimer = document.querySelector(".disclaimer");
+    if (disclaimer) disclaimer.textContent = "Mitra is an early prototype. Voice recognition depends on browser support and may use an online speech service. Avoid speaking sensitive information.";
+    const welcomeCopy = document.querySelector(".welcome-copy");
+    if (welcomeCopy) welcomeCopy.textContent = "Tap the microphone, speak naturally, and Mitra will answer out loud.";
+    const modelSelect = $("modelSelect");
+    if (modelSelect) {
+      modelSelect.replaceChildren();
+      [["gemini-3.8-flash","Gemini 3.8 Flash (recommended)"],["gemini-3.5-flash-lite","Gemini 3.5 Flash-Lite"],["gemini-2.5-flash","Gemini 2.5 Flash (legacy access may be limited)"]].forEach(([value,label]) => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = label;
+        modelSelect.append(option);
+      });
+      modelSelect.value = "gemini-3.8-flash";
+    }
+  }
   let apiKey = "";
   let model = "gemini-3.8-flash";
   let history = loadHistory();
@@ -298,6 +340,7 @@
   $("menuBtn").addEventListener("click", () => $("sidebar").classList.toggle("open"));
   document.addEventListener("keydown", (event) => { if (event.key === "Escape") { closeSettings(); stopListening(); } });
 
+  setupVoiceUi();
   renderHistory();
   updateConnection();
 })();
