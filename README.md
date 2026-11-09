@@ -1,51 +1,68 @@
 # Mitra
 
-Mitra is a personal AI assistant project intended to grow into a companion for Windows and Android. This repository now contains an early, responsive browser-based chat prototype.
+**Mitra is an offline-first personal AI assistant.** The goal is natural conversation plus useful, permission-controlled actions on the device. Android is the first implementation target; the core is being designed to support other platforms over time.
 
-## Current status
+> **Project status:** Early prototype and architecture foundation. This repository does not yet contain a working native Android assistant, offline language model, wake-word service, or device-control engine. Do not treat planned features as implemented.
 
-**Early prototype — not secure or feature-complete.** The browser interface can call Google's Gemini API when a user supplies their own API key in the settings dialog. It is not a standalone AI model, and it has not been verified with a real API key in this environment.
+## Product principles
 
-Implemented in this prototype:
-- Responsive chat interface for desktop and mobile browsers.
-- Gemini API connection configured by the user.
-- API key held in JavaScript memory for the current tab; it is not committed to this repository or saved by the app.
-- Conversation history stored in the current browser's local storage.
-- New-conversation control and clear connection/error feedback.
+- **Offline by default:** Network-backed AI and search are unavailable until the user enables network access.
+- **Conversational + actionable:** Mitra should understand natural language and follow-up requests, then use approved device capabilities.
+- **Permission-first:** Each device capability must use supported operating-system APIs and explicit user-granted permissions.
+- **Safe actions:** The model may propose an action, but a trusted policy layer validates it before execution.
+- **Portable core:** Conversation, policy, memory interfaces, and capability contracts should not depend on one device platform.
+- **Honest feedback:** Mitra must report the actual result, including when a task is unsupported or blocked.
 
-Not implemented yet:
-- Native Android or Windows apps.
-- Secure shared memory or cross-device synchronization.
-- Encrypted USB storage, USB-presence authentication, or removal locking.
-- Voice, device control, offline AI, user accounts, or a private backend.
-- A server-side proxy to keep provider credentials away from browser requests.
+## Intended capabilities
 
-## Try the browser prototype
+### Local / offline
+- Natural voice interaction, subject to available on-device speech components.
+- Local command handling for supported tasks.
+- Alarms, timers, calendar access, app launching, and other integrations where the operating system exposes safe APIs.
+- Private, user-controlled local memory.
+- Clear offline responses when a request needs unavailable online information.
 
-1. Open the deployed GitHub Pages site if Pages is enabled for this repository. If it is not deployed yet, enable Pages in the repository settings and publish from the main branch / root folder.
-2. Create a Gemini API key through [Google AI Studio](https://aistudio.google.com/app/apikey), subject to Google's current eligibility and usage limits.
-3. Open Connect AI in Mitra and paste the key. The app keeps it in memory for the current tab only. Refreshing or closing the tab clears it.
-4. Send a simple, non-sensitive test message.
+### Optional network access
+- Online AI providers and web search only when network access is enabled.
+- Network use should be task-driven, not continuous or silent.
+- No automatic cloud fallback when offline mode is active.
+- Private memory or conversation history must not be uploaded without explicit user control.
 
-This browser-only implementation sends prompts to Google's API directly from the browser. It is a learning prototype, not a secure production architecture. Never use it on a shared/untrusted device, never commit API keys, and do not send passwords, confidential information, or patient-identifiable data. Provider terms and free-tier availability can change.
+### Platform support
+Android is first. Windows, iOS, macOS, Linux, and web are future targets. Capabilities will differ by platform because operating systems and third-party apps impose different restrictions. Mitra will not bypass app sandboxing or claim universal control over every app.
 
-## Local data
+## Repository today
 
-Conversation history is stored in the browser's local storage on that device. It is not automatically shared between phone and PC. Do not use this prototype to store sensitive conversations. Clearing browser site data removes the saved history.
+- `index.html`, `style.css`, `app.js`: existing browser chat prototype.
+- `mitra/`: small Python console scaffold; not the assistant engine.
+- `tests/`: initial smoke test.
+- `docs/ARCHITECTURE.md`: product and technical architecture baseline.
+- `core/schemas/`: platform-neutral capability request/result contracts.
 
-## Roadmap
+The browser prototype can connect directly to Google's Gemini API when a user supplies an API key. The key is held in browser memory for the current tab. This is a learning prototype, **not a secure production design**. Do not enter sensitive information or use it as a secure personal assistant. Never commit API keys or credentials.
 
-1. Test and stabilize the browser chat.
-2. Add user-controlled export/import for non-sensitive conversation data.
-3. Design secure identity, encrypted storage, and a realistic USB workflow.
-4. Evaluate an optional private backend or local model if needed.
-5. Add voice and carefully permission-gated device actions.
-6. Explore native Windows and Android packages.
+Conversation history in the browser prototype is stored in that browser's local storage. It is not encrypted or synchronized across devices.
 
-A USB drive is storage, not an authentication factor by itself. Removing a drive cannot guarantee all traces disappear from host memory, caches, logs, or temporary files.
+## Development sequence
 
-## Development notes
+1. Define and test platform-neutral capability and policy contracts.
+2. Build the smallest native Android vertical slice with network access disabled.
+3. Add local voice interaction; evaluate background wake-word feasibility separately.
+4. Benchmark on-device speech and language models on real hardware.
+5. Add encrypted local memory and carefully permissioned device integrations.
+6. Add an explicit network gate and optional online providers/search.
+7. Build additional platform connectors when the shared core is stable.
 
-The older Python console scaffold remains in the repository as an initial experiment. The browser prototype is currently the simplest way to test one interface on both a Windows PC and Android phone.
+## Security rules
 
-No license has been selected. Until one is added, do not assume reuse or redistribution is permitted.
+- Never commit API keys, tokens, private memory, or personal data.
+- Never execute arbitrary shell commands generated by a model.
+- Validate every proposed capability and argument before execution.
+- Re-check OS permissions when an action is performed.
+- Require confirmation for sending messages, deleting data, purchases/payments, public posting, security changes, and other consequential actions.
+- Treat third-party app content and model output as untrusted input.
+- Do not claim an action succeeded until the operating system or integration confirms it.
+
+## Contributing and licensing
+
+The project is under active development. No open-source license has been selected yet, so reuse and redistribution rights should not be assumed. Architecture and implementation decisions should be documented before introducing major dependencies or platform-specific abstractions.
