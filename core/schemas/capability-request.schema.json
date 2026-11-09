@@ -2,18 +2,13 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://mitra.local/schemas/capability-request.schema.json",
   "title": "Mitra Capability Request",
-  "description": "A constrained request from Mitra Core to a trusted platform capability adapter. This request is not permission to execute by itself.",
+  "description": "A constrained proposal from Mitra Core to a trusted platform adapter. A valid request is not, by itself, permission to execute.",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema_version", "request_id", "capability", "arguments", "created_at"],
   "properties": {
-    "schema_version": {
-      "const": "1.0"
-    },
-    "request_id": {
-      "type": "string",
-      "format": "uuid"
-    },
+    "schema_version": { "const": "1.0" },
+    "request_id": { "type": "string", "format": "uuid" },
     "capability": {
       "type": "string",
       "enum": [
@@ -25,16 +20,107 @@
         "notification.read"
       ]
     },
-    "arguments": {
-      "type": "object"
+    "arguments": { "type": "object" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "reason": { "type": "string", "maxLength": 300 }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "capability": { "const": "device.timer.create" } }, "required": ["capability"] },
+      "then": {
+        "properties": {
+          "arguments": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["duration_seconds"],
+            "properties": {
+              "duration_seconds": { "type": "integer", "minimum": 1, "maximum": 604800 },
+              "label": { "type": "string", "maxLength": 80 }
+            }
+          }
+        }
+      }
     },
-    "created_at": {
-      "type": "string",
-      "format": "date-time"
+    {
+      "if": { "properties": { "capability": { "const": "device.alarm.create" } }, "required": ["capability"] },
+      "then": {
+        "properties": {
+          "arguments": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["scheduled_at"],
+            "properties": {
+              "scheduled_at": { "type": "string", "format": "date-time" },
+              "label": { "type": "string", "maxLength": 80 }
+            }
+          }
+        }
+      }
     },
-    "reason": {
-      "type": "string",
-      "maxLength": 300
+    {
+      "if": { "properties": { "capability": { "const": "calendar.event.read" } }, "required": ["capability"] },
+      "then": {
+        "properties": {
+          "arguments": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["from", "to"],
+            "properties": {
+              "from": { "type": "string", "format": "date-time" },
+              "to": { "type": "string", "format": "date-time" },
+              "limit": { "type": "integer", "minimum": 1, "maximum": 100 }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "capability": { "const": "calendar.event.create" } }, "required": ["capability"] },
+      "then": {
+        "properties": {
+          "arguments": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["title", "starts_at", "ends_at"],
+            "properties": {
+              "title": { "type": "string", "minLength": 1, "maxLength": 160 },
+              "starts_at": { "type": "string", "format": "date-time" },
+              "ends_at": { "type": "string", "format": "date-time" },
+              "notes": { "type": "string", "maxLength": 1000 }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "capability": { "const": "app.launch" } }, "required": ["capability"] },
+      "then": {
+        "properties": {
+          "arguments": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["app_id"],
+            "properties": {
+              "app_id": { "type": "string", "pattern": "^[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)+$", "maxLength": 200 }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "capability": { "const": "notification.read" } }, "required": ["capability"] },
+      "then": {
+        "properties": {
+          "arguments": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "package_id": { "type": "string", "pattern": "^[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)+$", "maxLength": 200 },
+              "limit": { "type": "integer", "minimum": 1, "maximum": 50 }
+            }
+          }
+        }
+      }
     }
-  }
+  ]
 }
