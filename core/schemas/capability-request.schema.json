@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mitra.local/schemas/capability-request.schema.json",
+  "title": "Mitra Capability Request",
+  "description": "A constrained request from Mitra Core to a trusted platform capability adapter. This request is not permission to execute by itself.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "request_id", "capability", "arguments", "created_at"],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "request_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "capability": {
+      "type": "string",
+      "enum": [
+        "device.timer.create",
+        "device.alarm.create",
+        "calendar.event.read",
+        "calendar.event.create",
+        "app.launch",
+        "notification.read"
+      ]
+    },
+    "arguments": {
+      "type": "object"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reason": {
+      "type": "string",
+      "maxLength": 300
+    }
+  }
+}
