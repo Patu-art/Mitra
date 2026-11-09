@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "policy_version": "1.0",
+  "description": "Mitra's platform-neutral permission policy. Platform adapters must enforce this policy before executing any capability.",
+  "default_decision": "deny",
+  "decision_order": [
+    "deny_if_network_required_but_network_disabled",
+    "deny_if_capability_unknown_or_not_enabled",
+    "deny_if_required_platform_permission_missing",
+    "deny_if_user_intent_is_not_explicit",
+    "require_confirmation_if_policy_says_so",
+    "allow_only_after_all_checks_pass"
+  ],
+  "global_rules": {
+    "network_enabled_by_default": false,
+    "cloud_fallback_when_offline": false,
+    "model_output_is_untrusted": true,
+    "model_may_grant_permissions": false,
+    "model_may_change_policy": false,
+    "execute_arbitrary_shell_or_code": false,
+    "read_private_app_databases": false,
+    "report_success_only_after_platform_confirmation": true,
+    "log_sensitive_arguments": false
+  },
+  "decisions": {
+    "device.timer.create": {
+      "enabled": true,
+      "user_intent": "explicit",
+      "confirmation": "not_required",
+      "platform_permissions": [],
+      "notes": "Create only the timer requested by the user. Do not infer or silently add timers."
+    },
+    "device.alarm.create": {
+      "enabled": true,
+      "user_intent": "explicit",
+      "confirmation": "not_required",
+      "platform_permissions": ["exact_alarm_if_required_by_os"],
+      "notes": "Create only the alarm requested by the user. The platform must report whether exact scheduling is available."
+    },
+    "calendar.event.read": {
+      "enabled": true,
+      "user_intent": "explicit",
+      "confirmation": "not_required",
+      "platform_permissions": ["calendar_read"],
+      "notes": "Read only the requested date range and fields. Do not read calendar data in the background."
+    },
+    "calendar.event.create": {
+      "enabled": true,
+      "user_intent": "explicit",
+      "confirmation": "required",
+      "platform_permissions": ["calendar_write"],
+      "notes": "Show event title, date, time and calendar destination before creating."
+    },
+    "app.launch": {
+      "enabled": true,
+      "user_intent": "explicit",
+      "confirmation": "not_required",
+      "platform_permissions": [],
+      "allowlist_required": true,
+      "notes": "Launch only an installed app whose package identifier is on the user's app allowlist. Never install apps."
+    },
+    "notification.read": {
+      "enabled": true,
+      "user_intent": "explicit",
+      "confirmation": "not_required",
+      "platform_permissions": ["notification_listener_access"],
+      "notes": "Read only notifications exposed by the operating system and requested by the user. No private app database access."
+    }
+  },
+  "always_require_confirmation": [
+    "message.send",
+    "message.reply",
+    "content.publish",
+    "file.delete",
+    "data.delete",
+    "purchase.create",
+    "payment.create",
+    "security_setting.change",
+    "permission.change"
+  ],
+  "always_deny": [
+    "arbitrary_shell.execute",
+    "arbitrary_code.execute",
+    "private_app_database.read",
+    "credential.export",
+    "network.request_when_disabled"
+  ],
+  "confirmation_rules": {
+    "must_describe_exact_action": true,
+    "must_show_relevant_target_and_content": true,
+    "confirmation_is_single_action_and_single_use": true,
+    "expired_or_modified_request_requires_new_confirmation": true,
+    "silence_is_not_confirmation": true,
+    "model_generated_text_is_not_confirmation": true
+  }
+}
